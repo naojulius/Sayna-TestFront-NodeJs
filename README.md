@@ -32,7 +32,7 @@ $ heroku open
 ```json
 {
     "firstname": "nom",
-     "lastname": "prénom",
+    "lastname": "prénom",
     "email": "email",
     "password": "mot de passe",
     "dateNaissance": "1date de naissance",
@@ -42,13 +42,44 @@ $ heroku open
 
 ### Authentification login/connexion
 ```diff
-- POST https://test-api-sayna-nao.herokuapp.com/auth/login
++ POST https://test-api-sayna-nao.herokuapp.com/auth/login
 ```
 ```json
 {
     "email": "email",
-     "password": "mot de passe"
+    "password": "mot de passe"
 }
+```
+
+### Authentification login/connexion
+```diff
++ POST https://test-api-sayna-nao.herokuapp.com/auth/login
+```
+```json
+{
+    "email": "email",
+    "password": "mot de passe"
+}
+```
+
+### toutes les utilisateurs
+```diff
+@@ GET https://test-api-sayna-nao.herokuapp.com/user/all/{token}
+```
+
+### Un utilisateur
+```diff
+@@ GET https://test-api-sayna-nao.herokuapp.com/user/{token}
+```
+
+### Déconnexion utilisateur
+```diff
+@@ DELETE https://test-api-sayna-nao.herokuapp.com/user/{token}
+```
+
+### Mise à jour utilisateur
+```diff
+! PUT https://test-api-sayna-nao.herokuapp.com/user/{token}
 ```
 
 
