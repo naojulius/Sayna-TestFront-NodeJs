@@ -1,8 +1,7 @@
 # Api nodejs 
 Cette application est faite à partir de la technologie NodeJS et typescript en utilisant une base de donnée NOSQL MongoDB (hébergé sur ATLAS)
-Note 1:  L"application devra être transpilée avant le déploiement en production ou en locale. ```npm run build```. la version tanspilé seras dans la répértoire ```build```.
+Note:  L"application devra être transpilée avant le déploiement en production ou en locale. ```npm run build```. la version tanspilé seras dans la répértoire ```build```.
 
-Note 2: 
 
 
 *** Par Nao Julius ***
