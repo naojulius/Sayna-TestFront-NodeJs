@@ -50,18 +50,10 @@ $ heroku open
     "password": "mot de passe"
 }
 ```
-
-### Authentification login/connexion
+### Authentification Déconnexion utilisateur
 ```diff
-+ POST https://test-api-sayna-nao.herokuapp.com/auth/login
+- DELETE https://test-api-sayna-nao.herokuapp.com/user/{token}
 ```
-```json
-{
-    "email": "email",
-    "password": "mot de passe"
-}
-```
-
 ### toutes les utilisateurs
 ```diff
 # GET https://test-api-sayna-nao.herokuapp.com/user/all/{token}
@@ -71,12 +63,6 @@ $ heroku open
 ```diff
 # GET https://test-api-sayna-nao.herokuapp.com/user/{token}
 ```
-
-### Déconnexion utilisateur
-```diff
-- DELETE https://test-api-sayna-nao.herokuapp.com/user/{token}
-```
-
 ### Mise à jour utilisateur
 ```diff
 ! PUT https://test-api-sayna-nao.herokuapp.com/user/{token}
