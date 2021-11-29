@@ -74,7 +74,7 @@ $ heroku open
 
 ### Déconnexion utilisateur
 ```diff
-# DELETE https://test-api-sayna-nao.herokuapp.com/user/{token}
+- DELETE https://test-api-sayna-nao.herokuapp.com/user/{token}
 ```
 
 ### Mise à jour utilisateur
