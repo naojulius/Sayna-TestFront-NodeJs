@@ -6,6 +6,7 @@ import express, { Express } from "express";
 import morgan from "morgan";
 import { UserRepository } from "./@api_core/repositories/user-repository.service";
 import { EUser } from "./@api_core/entities/euser";
+import path from "path";
 
 const router: Express = express();
 
@@ -28,10 +29,19 @@ connectDatabase()
     });
 
     /** Routes */
-    router.get("/", (req, res, next) => {
-      return res.status(200).json({
-        message: "API page",
-      });
+    // router.get("/", (req, res, next) => {
+    //   return res.status(200).json({
+    //     message: "API page",
+    //   });
+    // });
+
+    router.set("views", path.join(__dirname, "views"));
+    router.set("view engine", "ejs");
+
+    // define a route handler for the default home page
+    router.get("/", (req, res) => {
+      // render the index template
+      res.render("index");
     });
 
     router.use("/user", user);
