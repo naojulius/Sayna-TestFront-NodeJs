@@ -27,7 +27,7 @@ $ heroku open
 ## Uri
 ### Authentification enregistrement
 ```diff
-- POST https://test-api-sayna-nao.herokuapp.com/auth/register
++ POST https://test-api-sayna-nao.herokuapp.com/auth/register
 ```
 ```json
 {
@@ -64,17 +64,17 @@ $ heroku open
 
 ### toutes les utilisateurs
 ```diff
-@@ GET https://test-api-sayna-nao.herokuapp.com/user/all/{token}
+# GET https://test-api-sayna-nao.herokuapp.com/user/all/{token}
 ```
 
 ### Un utilisateur
 ```diff
-@@ GET https://test-api-sayna-nao.herokuapp.com/user/{token}
+# GET https://test-api-sayna-nao.herokuapp.com/user/{token}
 ```
 
 ### Déconnexion utilisateur
 ```diff
-@@ DELETE https://test-api-sayna-nao.herokuapp.com/user/{token}
+# DELETE https://test-api-sayna-nao.herokuapp.com/user/{token}
 ```
 
 ### Mise à jour utilisateur
