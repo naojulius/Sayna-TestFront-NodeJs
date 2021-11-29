@@ -1,12 +1,13 @@
 
 import { Request, Response } from "express";
-import { ObjectId } from "mongodb";
-import { TokenPayloadResp, UserPayloadResp } from "../@core/entity/token-payload-resp";
-import { UsersResp } from "../@core/entity/user-resp";
+import { TokenPayloadResp } from "../@api_core/entities/etoken-payload-resp";
+import { EUser } from "../@api_core/entities/euser";
+import { HttpHelper } from "../@api_core/helpers/http-helper";
+import { checkToken } from "../@api_core/helpers/token-helper";
+import { UserRepository } from "../@api_core/repositories/user-repository.service";
 import { FR } from "../config/language-fr";
-import { checkToken } from "../middlewares/check-auth-token";
-import User from "../model/user";
-import { UserService } from "../services/user.service";
+
+
 
 class UserController {
   static check = async (req: Request, res: Response) => {
@@ -17,80 +18,48 @@ class UserController {
     try {
       let token: string = req.params.token;
       let payloadResp = checkToken(req, res, token) as TokenPayloadResp;
-      const user = (await UserService.getUser({
+      let user = (await UserRepository.findOneAsync({
         email: payloadResp.email,
         firstname: payloadResp.firstname,
         lastname: payloadResp.lastname,
-      })) as any as User;
-      let userPayloadResp: UserPayloadResp = new UserPayloadResp(user, false, "");
-      return res.status(200).send(userPayloadResp);
+      })) as EUser;
+      user.password = undefined;
+      return await HttpHelper.OK(req, res, null, user);
     } catch (error) {
-      let user = {} as User;
-      let userPayloadResp: UserPayloadResp = new UserPayloadResp(
-        user,
-        true,
-        FR["token.not.valid"]
-      );
-      return res.status(401).send(userPayloadResp);
+     return await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
     }
   };
 
   static logOutUser = async (req: Request, res: Response) => {
     try {
-      return res.status(200).send({
-        error: false,
-        message: FR["success.user.disconnected"],
-      });
+      return await HttpHelper.OK(req, res, FR["success.user.disconnected"]);
     } catch (error) {
-      let user = {} as User;
-      let userPayloadResp: UserPayloadResp = new UserPayloadResp(
-        user,
-        true,
-        FR["token.not.valid"]
-      );
-      return res.status(401).send(userPayloadResp);
+      return await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
     }
   };
 
   static updateUser = async (req: Request, res: Response) => {
     try {
-      const newUser = req.body as User;
+      const newUser = req.body as EUser;
       let token: string = req.params.token;
       let payloadResp = checkToken(req, res, token) as TokenPayloadResp;
-      const query = { _id: new ObjectId(payloadResp._id) };
-      let result = await UserService.updateUser(query, newUser);
+      let result = await UserRepository.UpdateAsync(payloadResp._id, newUser);
       return result
-        ? res.status(200).send({
-          error: false,
-          message: FR["success.user.modified"],
-        })
-        : res.status(401).send({
-          error: false,
-          message: FR["token.not.valid"],
-        });
+        ?  await HttpHelper.OK(req, res, FR["success.user.modified"])
+        :  await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
     } catch (error) {
-      let user = {} as User;
-      let userPayloadResp: UserPayloadResp = new UserPayloadResp(
-        user,
-        true,
-        FR["token.not.valid"]
-      );
-      return res.status(401).send(userPayloadResp);
+      await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
     }
   };
   static getAllUser = async (req: Request, res: Response) => {
     try {
-      const users = (await UserService.getAllUser()) as Array<any>;
-      let usersResp: UsersResp = new UsersResp(users);
-      return res.status(200).send(usersResp);
+      const users = (await UserRepository.findAllAsync()) as Array<any>;
+      users.forEach(element => {
+        element.password = undefined;
+      });
+      await HttpHelper.OK(req, res, null, users)
     } catch (error) {
-      let user = {} as User;
-      let userPayloadResp: UserPayloadResp = new UserPayloadResp(
-        user,
-        true,
-        FR["token.not.valid"]
-      );
-      return res.status(401).send(userPayloadResp);
+      await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
     }
   };
 }

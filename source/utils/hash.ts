@@ -4,7 +4,7 @@ export const hashPass = (text: any): any => {
   return hashedPassword;
 };
 
-export const verify = (hash: any, text: any): boolean => {
+export const verifyPass = (hash: any, text: any): boolean => {
   const doesPasswordMatch = bcrypt.compareSync(text, hash);
   return doesPasswordMatch;
 };

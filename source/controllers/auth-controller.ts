@@ -1,92 +1,54 @@
 import { Request, Response } from "express";
-import * as jwt from "jsonwebtoken";
-import { random } from "../utils/random";
-import config from "../config";
-import { AuthResponse } from "../@core/entity/auth-resp";
-import { Tokens } from "../@core/entity/tokens";
-import User from "../model/user";
-import { UserLoginRequest } from "../@core/entity/user-login-req";
-import { UserService } from "../services/user.service";
-import * as EmailValidator from "email-validator";
-import { validateUser, validateUserField } from "../utils/user-validator";
-import { ObjectId } from "mongodb";
+import { UserLoginRequest } from "../@api_core/entities/euser-login-req";
 import { FR } from "../config/language-fr";
+import { UserHelper } from "../@api_core/helpers/user-helper";
+import { UserRepository } from "../@api_core/repositories/user-repository.service";
+import { HttpHelper } from "../@api_core/helpers/http-helper";
+import { TokenHelper } from "../@api_core/helpers/token-helper";
+import { hashPass, verifyPass } from "../utils/hash";
+import { Tokens } from "../@api_core/entities/etoken";
+import { EUser } from "../@api_core/entities/euser";
 
 class AuthController {
-  public static refTokens = new Array<{
-    email: string;
-    firstname: string;
-    lastname: string;
-    refreshToken: string;
-    _id: ObjectId;
-  }>();
-  private static issueToken = async (
-    email: string,
-    firstname: string,
-    lastname: string,
-    _id: ObjectId
-  ) => {
-    const userToken = {
-      email,
-      firstname,
-      lastname,
-      _id,
-    };
-    //generation du nouveau access token
-    const token = jwt.sign(userToken, config.jwtSecret, {
-      expiresIn: config.jwtExpirationSeconds,
-    });
-    // generating refresh token
-    // we should store it in database, I'm just putting it in a list
-    const refreshToken = random(64);
-    AuthController.refTokens.push({
-      email: email,
-      firstname: firstname,
-      lastname: lastname,
-      refreshToken: refreshToken,
-      _id: _id,
-    });
-    return { accessToken: token, refreshToken: refreshToken };
-  };
+  
   static login = async (req: Request, res: Response) => {
     const userLoginRequest: UserLoginRequest = new UserLoginRequest();
     userLoginRequest.email = req.body.email;
     userLoginRequest.password = req.body.password;
 
-    const user = (await UserService.authenticate(
-      userLoginRequest
-    )) as any as User;
-
+    const user = (await UserRepository.findOneAsync(
+      {email: userLoginRequest.email}
+    )) as any as EUser;
+     
     if (!user) {
-      let authResponse: AuthResponse = new AuthResponse(
-        FR["wrong.mail.password"]
-      );
-      authResponse.error = true;
-      authResponse.tokens = new Tokens(null);
-      return res.status(401).json(authResponse);
+      return HttpHelper.UNAUTHORIZED(req, res, FR["wrong.mail.password"]);
     }
-
-    let newToken = await AuthController.issueToken(
+    if(!verifyPass(user.password, userLoginRequest.password)){
+      return HttpHelper.UNAUTHORIZED(req, res, FR["wrong.mail.password"]);
+    } 
+    
+    let newToken = await TokenHelper.issueToken(
       userLoginRequest.email,
       user.firstname,
       user.lastname,
       user._id
     );
     let accessedToken: Tokens = new Tokens(newToken);
-    let authResponse: AuthResponse = new AuthResponse(
-      FR["success.user.connected"]
-    );
-    authResponse.error = false;
-    authResponse.tokens = accessedToken;
-    res.status(200).json(authResponse);
+    return HttpHelper.OK_TOKEN(req, res, FR["success.user.connected"], {
+      createdAt: new Date(),
+      refreshToken: accessedToken.refreshToken,
+      token: accessedToken.token,
+    });
   };
+
+
   static refreshToken = async (req: Request, res: Response) => {
     const refreshToken = req.body.refreshToken;
-    var foundedRefToken = AuthController.refTokens.find(
+    var foundedRefToken = TokenHelper.refTokens.find(
       (x) => x.refreshToken == refreshToken
     );
     if (foundedRefToken) {
-      const token = await AuthController.issueToken(
+      const token = await TokenHelper.issueToken(
         foundedRefToken.email,
         foundedRefToken.firstname,
         foundedRefToken.lastname,
@@ -97,46 +59,27 @@ class AuthController {
         refreshToken: token.refreshToken,
       });
     } else {
-      res.sendStatus(401);
+      return await HttpHelper.UNAUTHORIZED(req, res, '');
     }
   };
 
   static register = async (req: Request, res: Response) => {
-    const user = req.body as User;
-    if (!validateUser(user)) {
-      let authResponse: AuthResponse = new AuthResponse(FR["data.not.valid"]);
-      authResponse.error = true;
-      return res.status(401).send(authResponse);
+    const user = req.body as EUser;
+    if (!UserHelper.validateUser(user)) {
+      return await HttpHelper.UNAUTHORIZED(req, res, FR["data.not.valid"]);
     }
-    if (!validateUserField(user)) {
-      let authResponse: AuthResponse = new AuthResponse(
-        FR["data.not.complete"]
-      );
-      authResponse.error = true;
-      return res.status(401).send(authResponse);
+    if (!UserHelper.validateUserField(user)) {
+      return await HttpHelper.UNAUTHORIZED(req, res, FR["data.not.complete"]);
     }
-    if (!EmailValidator.validate(user.email)) {
-      let authResponse: AuthResponse = new AuthResponse(FR["email.not.valid"]);
-      authResponse.error = true;
-      return res.status(401).send(authResponse);
+    if (!UserHelper.validateUserEmail(user.email)) {
+      return await HttpHelper.UNAUTHORIZED(req, res, FR["email.not.valid"]);
     }
-    const result = (await UserService.registration(user)) as any;
-    return result ? this.resp(res, true) : this.resp(res, false);
+    user.password = await hashPass(user.password);
+    const result = (await UserRepository.saveAsync(user)) as any;
+    return result
+      ? await HttpHelper.OK(req, res, FR["success.user.saved"])
+      : await HttpHelper.UNAUTHORIZED(req, res, FR["error.user.saved"]);
   };
-
-  static resp(res: any, status: boolean) {
-    if (status) {
-      let authResponse: AuthResponse = new AuthResponse(
-        FR["success.user.saved"]
-      );
-      authResponse.error = false;
-      return res.status(201).send(authResponse);
-    } else {
-      let authResponse: AuthResponse = new AuthResponse(FR["error.user.saved"]);
-      authResponse.error = true;
-      return res.status(401).send(authResponse);
-    }
-  }
 }
 
 export default AuthController;
