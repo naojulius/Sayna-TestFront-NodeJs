@@ -1,8 +1,9 @@
-# test Api Node JS
+# Api nodejs 
+*** Par Nao Julius ***
 
 lien de production: [Sayna-TestFront-NodeJs](https://test-api-sayna-nao.herokuapp.com/)
 
-## Running Locally
+## Déploiement en serveur local
 
 Soyons en sure que nous avons [Node.js](http://nodejs.org/) déjà installé.
 
@@ -16,15 +17,7 @@ $ npm run dev
 
 L'application devra être lancée sous [localhost:6060](http://localhost:6060/).
 
-## Déploiement sur Heroku
-
-```
-$ heroku create
-$ git push heroku main
-$ heroku open
-```
-
-## Uri
+## Les uri et méthodes
 ### Authentification enregistrement
 ```diff
 + POST https://test-api-sayna-nao.herokuapp.com/auth/register
@@ -54,7 +47,7 @@ $ heroku open
 ```diff
 - DELETE https://test-api-sayna-nao.herokuapp.com/user/{token}
 ```
-### toutes les utilisateurs
+### Toutes les utilisateurs
 ```diff
 # GET https://test-api-sayna-nao.herokuapp.com/user/all/{token}
 ```
