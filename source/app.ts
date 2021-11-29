@@ -7,9 +7,7 @@
 // import { UserRepository } from "./@api_core/repositories/user-repository.service";
 // import { EUser } from "./@api_core/entities/euser";
 
-
 // const router: Express = express();
-
 
 // connectDatabase().then(async () => {
 //    /* let _user: EUser = new EUser();
@@ -25,7 +23,7 @@
 //     // await UserRepository.UpdateAsync("61a50d192224cf31934a3915", {});
 //     // let  _user = await UserRepository.findByIdAsync('61a50d192224cf31934a3915') as EUser;
 //     //  console.log("====>USERS", _user);
-     
+
 //     router.use(morgan("dev"));
 //     router.use(express.urlencoded({ extended: false }));
 //     router.use(express.json());
@@ -41,17 +39,17 @@
 //         }
 //         next();
 //     });
-    
+
 //     /** Routes */
 //     router.get("/", (req, res, next) => {
 //         return res.status(200).json({
 //             message: "API page",
 //         });
 //     });
-    
+
 //     router.use("/user", user)
 //     router.use("/auth", auth);
-    
+
 //     /** Error handling */
 //     router.use((req, res, next) => {
 //         const error = new Error("not found");
@@ -59,15 +57,12 @@
 //             message: error.message,
 //         });
 //     });
-    
+
 //     /** Server */
 //     const httpServer = http.createServer(router);
 //     const PORT: any = process.env.PORT ?? 6060;
 //     httpServer.listen(PORT, () =>
 //         console.log(`The server is running on port ${PORT}`)
 //     );
-    
+
 // }).catch(err => console.log(err));
-
-
-

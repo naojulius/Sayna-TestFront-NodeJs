@@ -15,7 +15,7 @@ export const checkToken = (req: Request, res: Response, token: string): any => {
   }
 };
 
-export class TokenHelper{
+export class TokenHelper {
   public static refTokens = new Array<{
     email: string;
     firstname?: string;
@@ -24,9 +24,9 @@ export class TokenHelper{
     _id?: ObjectId;
   }>();
 
-  public  static issueToken = async (
+  public static issueToken = async (
     email: string,
-    firstname?: string, 
+    firstname?: string,
     lastname?: string,
     _id?: ObjectId
   ) => {
@@ -53,6 +53,3 @@ export class TokenHelper{
     return { accessToken: token, refreshToken: refreshToken };
   };
 }
-
-
-

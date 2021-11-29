@@ -23,7 +23,7 @@ export class UserHelper {
     return true;
   }
 
-  static validateUserEmail(email?: string): boolean{
+  static validateUserEmail(email?: string): boolean {
     if (!EmailValidator.validate(email!)) {
       return false;
     }

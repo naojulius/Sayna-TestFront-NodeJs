@@ -1,4 +1,3 @@
-
 import { Request, Response } from "express";
 import { TokenPayloadResp } from "../@api_core/entities/etoken-payload-resp";
 import { EUser } from "../@api_core/entities/euser";
@@ -6,8 +5,6 @@ import { HttpHelper } from "../@api_core/helpers/http-helper";
 import { checkToken } from "../@api_core/helpers/token-helper";
 import { UserRepository } from "../@api_core/repositories/user-repository.service";
 import { FR } from "../config/language-fr";
-
-
 
 class UserController {
   static check = async (req: Request, res: Response) => {
@@ -26,7 +23,7 @@ class UserController {
       user.password = undefined;
       return await HttpHelper.OK(req, res, null, user);
     } catch (error) {
-     return await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
+      return await HttpHelper.UNAUTHORIZED(req, res, FR["token.not.valid"]);
     }
   };
 
@@ -34,7 +31,7 @@ class UserController {
     try {
       return await HttpHelper.OK(req, res, FR["success.user.disconnected"]);
     } catch (error) {
-      return await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
+      return await HttpHelper.UNAUTHORIZED(req, res, FR["token.not.valid"]);
     }
   };
 
@@ -45,21 +42,21 @@ class UserController {
       let payloadResp = checkToken(req, res, token) as TokenPayloadResp;
       let result = await UserRepository.UpdateAsync(payloadResp._id, newUser);
       return result
-        ?  await HttpHelper.OK(req, res, FR["success.user.modified"])
-        :  await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
+        ? await HttpHelper.OK(req, res, FR["success.user.modified"])
+        : await HttpHelper.UNAUTHORIZED(req, res, FR["token.not.valid"]);
     } catch (error) {
-      await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
+      await HttpHelper.UNAUTHORIZED(req, res, FR["token.not.valid"]);
     }
   };
   static getAllUser = async (req: Request, res: Response) => {
     try {
       const users = (await UserRepository.findAllAsync()) as Array<any>;
-      users.forEach(element => {
+      users.forEach((element) => {
         element.password = undefined;
       });
-      await HttpHelper.OK(req, res, null, users)
+      await HttpHelper.OK(req, res, null, users);
     } catch (error) {
-      await HttpHelper.UNAUTHORIZED(req, res,FR["token.not.valid"]);
+      await HttpHelper.UNAUTHORIZED(req, res, FR["token.not.valid"]);
     }
   };
 }

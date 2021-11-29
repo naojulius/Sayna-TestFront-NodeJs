@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-export class Etoken{
+export class Etoken {
   public static refTokens = new Array<{
     email: string;
     firstname: string;
@@ -8,7 +8,6 @@ export class Etoken{
     refreshToken: string;
     _id: ObjectId;
   }>();
-  
 }
 export class Tokens {
   token?: string;

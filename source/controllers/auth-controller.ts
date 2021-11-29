@@ -10,23 +10,22 @@ import { Tokens } from "../@api_core/entities/etoken";
 import { EUser } from "../@api_core/entities/euser";
 
 class AuthController {
-  
   static login = async (req: Request, res: Response) => {
     const userLoginRequest: UserLoginRequest = new UserLoginRequest();
     userLoginRequest.email = req.body.email;
     userLoginRequest.password = req.body.password;
 
-    const user = (await UserRepository.findOneAsync(
-      {email: userLoginRequest.email}
-    )) as any as EUser;
-     
+    const user = (await UserRepository.findOneAsync({
+      email: userLoginRequest.email,
+    })) as any as EUser;
+
     if (!user) {
       return HttpHelper.UNAUTHORIZED(req, res, FR["wrong.mail.password"]);
     }
-    if(!verifyPass(user.password, userLoginRequest.password)){
+    if (!verifyPass(user.password, userLoginRequest.password)) {
       return HttpHelper.UNAUTHORIZED(req, res, FR["wrong.mail.password"]);
-    } 
-    
+    }
+
     let newToken = await TokenHelper.issueToken(
       userLoginRequest.email,
       user.firstname,
@@ -40,7 +39,6 @@ class AuthController {
       token: accessedToken.token,
     });
   };
-
 
   static refreshToken = async (req: Request, res: Response) => {
     const refreshToken = req.body.refreshToken;
@@ -59,7 +57,7 @@ class AuthController {
         refreshToken: token.refreshToken,
       });
     } else {
-      return await HttpHelper.UNAUTHORIZED(req, res, '');
+      return await HttpHelper.UNAUTHORIZED(req, res, "");
     }
   };
 
