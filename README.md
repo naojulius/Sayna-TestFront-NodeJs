@@ -25,25 +25,30 @@ $ heroku open
 ```
 
 ## Uri
-Authentification enregistrement
+### Authentification enregistrement
+```diff
+- POST https://test-api-sayna-nao.herokuapp.com/auth/register
 ```
-https://test-api-sayna-nao.herokuapp.com/auth/register
-
+```json
 {
-    "firstname": "nao",
-     "lastname": "julius",
-    "email": "naoj8lius@gmail.com",
-    "password": "nao",
-    "dateNaissance": "11-12-2020",
-    "sexe": "Homme"
+    "firstname": "nom",
+     "lastname": "prénom",
+    "email": "email",
+    "password": "mot de passe",
+    "dateNaissance": "1date de naissance",
+    "sexe": "sexe"
 }
 ```
 
-
-
-Authentification login
+### Authentification login/connexion
+```diff
+- POST https://test-api-sayna-nao.herokuapp.com/auth/login
 ```
-https://test-api-sayna-nao.herokuapp.com/auth/login
+```json
+{
+    "email": "email",
+     "password": "mot de passe"
+}
 ```
 
 
